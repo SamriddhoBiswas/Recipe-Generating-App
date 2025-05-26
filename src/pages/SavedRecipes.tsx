@@ -42,7 +42,9 @@ const SavedRecipes = () => {
       // Transform the data to match our Recipe type
       const transformedRecipes: Recipe[] = (data || []).map(recipe => ({
         ...recipe,
-        ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients : [],
+        ingredients: Array.isArray(recipe.ingredients) 
+          ? recipe.ingredients.filter((item): item is string => typeof item === 'string')
+          : [],
         instructions: Array.isArray(recipe.instructions) ? recipe.instructions : [],
         tags: Array.isArray(recipe.tags) ? recipe.tags : [],
         nutritional_info: recipe.nutritional_info ? recipe.nutritional_info as Recipe['nutritional_info'] : null,
