@@ -31,7 +31,7 @@ const Profile = () => {
   });
 
   const dietaryGoals = ['Weight Loss', 'Weight Gain', 'Muscle Building', 'Heart Health', 'Diabetes Management', 'General Health'];
-  const foodPreferences = ['Vegetarian', 'Vegan', 'Gluten-free', 'Dairy-free', 'Keto', 'Low-carb', 'High-protein'];
+  const foodPreferences = ['Vegetarian', 'Vegan', 'Non-Vegetarian', 'Gluten-free', 'Dairy-free', 'Keto', 'Low-carb', 'High-protein'];
   const allergies = ['Nuts', 'Shellfish', 'Eggs', 'Dairy', 'Soy', 'Gluten', 'Fish'];
   const deficiencies = ['Iron', 'Vitamin D', 'B12', 'Calcium', 'Omega-3', 'Protein'];
   const cuisines = ['Mediterranean', 'Asian', 'Mexican', 'Italian', 'Indian', 'American', 'Middle Eastern'];
@@ -101,11 +101,21 @@ const Profile = () => {
     }
   };
 
-  const handleArrayChange = (array: string[], value: string, checked: boolean, setter: Function) => {
-    if (checked) {
-      setter((prev: any) => ({ ...prev, [array]: [...prev[array], value] }));
-    } else {
-      setter((prev: any) => ({ ...prev, [array]: prev[array].filter((item: string) => item !== value) }));
+  const handleArrayChange = (arrayName: keyof typeof preferences | keyof typeof profile, value: string, checked: boolean) => {
+    if (arrayName in preferences) {
+      setPreferences(prev => ({
+        ...prev,
+        [arrayName]: checked 
+          ? [...prev[arrayName as keyof typeof preferences], value]
+          : prev[arrayName as keyof typeof preferences].filter((item: string) => item !== value)
+      }));
+    } else if (arrayName in profile) {
+      setProfile(prev => ({
+        ...prev,
+        [arrayName]: checked 
+          ? [...(prev[arrayName as keyof typeof profile] as string[]), value]
+          : (prev[arrayName as keyof typeof profile] as string[]).filter((item: string) => item !== value)
+      }));
     }
   };
 
@@ -231,7 +241,7 @@ const Profile = () => {
                       id={goal}
                       checked={profile.dietary_goals.includes(goal)}
                       onCheckedChange={(checked) => 
-                        handleArrayChange('dietary_goals', goal, checked as boolean, setProfile)
+                        handleArrayChange('dietary_goals', goal, checked as boolean)
                       }
                     />
                     <Label htmlFor={goal} className="text-sm">{goal}</Label>
@@ -258,7 +268,7 @@ const Profile = () => {
                       id={pref}
                       checked={preferences.food_preferences.includes(pref)}
                       onCheckedChange={(checked) => 
-                        handleArrayChange('food_preferences', pref, checked as boolean, setPreferences)
+                        handleArrayChange('food_preferences', pref, checked as boolean)
                       }
                     />
                     <Label htmlFor={pref} className="text-sm">{pref}</Label>
@@ -276,7 +286,7 @@ const Profile = () => {
                       id={allergy}
                       checked={preferences.allergies.includes(allergy)}
                       onCheckedChange={(checked) => 
-                        handleArrayChange('allergies', allergy, checked as boolean, setPreferences)
+                        handleArrayChange('allergies', allergy, checked as boolean)
                       }
                     />
                     <Label htmlFor={allergy} className="text-sm">{allergy}</Label>
@@ -294,7 +304,7 @@ const Profile = () => {
                       id={def}
                       checked={preferences.deficiencies.includes(def)}
                       onCheckedChange={(checked) => 
-                        handleArrayChange('deficiencies', def, checked as boolean, setPreferences)
+                        handleArrayChange('deficiencies', def, checked as boolean)
                       }
                     />
                     <Label htmlFor={def} className="text-sm">{def}</Label>
@@ -312,7 +322,7 @@ const Profile = () => {
                       id={cuisine}
                       checked={preferences.cuisine_preferences.includes(cuisine)}
                       onCheckedChange={(checked) => 
-                        handleArrayChange('cuisine_preferences', cuisine, checked as boolean, setPreferences)
+                        handleArrayChange('cuisine_preferences', cuisine, checked as boolean)
                       }
                     />
                     <Label htmlFor={cuisine} className="text-sm">{cuisine}</Label>

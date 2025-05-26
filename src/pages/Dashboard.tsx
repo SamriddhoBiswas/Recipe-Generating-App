@@ -5,7 +5,7 @@ import UserPreferences from "@/components/UserPreferences";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChefHat, Clock, Users, Star, Plus, BookOpen, TrendingUp } from "lucide-react";
+import { ChefHat, Clock, Users, Star, Plus, BookOpen, TrendingUp, Target, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
@@ -15,6 +15,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
+  const [preferences, setPreferences] = useState<any>(null);
   const [recentRecipes, setRecentRecipes] = useState<any[]>([]);
   const [stats, setStats] = useState({
     totalRecipes: 0,
@@ -25,6 +26,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       fetchProfile();
+      fetchPreferences();
       fetchRecentRecipes();
       fetchStats();
     }
@@ -43,6 +45,22 @@ const Dashboard = () => {
       setProfile(data);
     } catch (error) {
       console.log('Profile not found, will be created on first save');
+    }
+  };
+
+  const fetchPreferences = async () => {
+    if (!user) return;
+    
+    try {
+      const { data } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      setPreferences(data);
+    } catch (error) {
+      console.log('Preferences not found, will be created on first save');
     }
   };
 
@@ -127,6 +145,57 @@ const Dashboard = () => {
             Ready to discover some healthy and delicious recipes today?
           </p>
         </div>
+
+        {/* Profile Summary Cards */}
+        {(profile?.dietary_goals?.length > 0 || preferences?.food_preferences?.length > 0) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {profile?.dietary_goals?.length > 0 && (
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Your Goals</CardTitle>
+                  <Target className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-1">
+                    {profile.dietary_goals.slice(0, 3).map((goal: string, index: number) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {goal}
+                      </Badge>
+                    ))}
+                    {profile.dietary_goals.length > 3 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{profile.dietary_goals.length - 3} more
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {preferences?.food_preferences?.length > 0 && (
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Food Preferences</CardTitle>
+                  <Heart className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-1">
+                    {preferences.food_preferences.slice(0, 3).map((pref: string, index: number) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {pref}
+                      </Badge>
+                    ))}
+                    {preferences.food_preferences.length > 3 && (
+                      <Badge variant="secondary" className="text-xs">
+                        +{preferences.food_preferences.length - 3} more
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -235,10 +304,22 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* User Preferences Component */}
-        <div className="mb-8">
-          <UserPreferences />
-        </div>
+        {/* Show setup prompt if no profile data */}
+        {!profile?.dietary_goals?.length && !preferences?.food_preferences?.length && (
+          <Card className="bg-gradient-to-r from-health-green-50 to-health-orange-50 border-health-green-200">
+            <CardHeader>
+              <CardTitle className="text-health-green-700">Complete Your Profile</CardTitle>
+              <CardDescription className="text-health-green-600">
+                Set up your dietary goals and preferences to get personalized recipe recommendations.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={() => navigate("/profile")} className="bg-health-green-600 hover:bg-health-green-700">
+                Set Up Profile
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );
