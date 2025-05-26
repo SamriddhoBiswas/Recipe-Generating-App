@@ -1,16 +1,32 @@
 
 import { Button } from "@/components/ui/button";
-import { ChefHat, User, Home, Plus, LogOut } from "lucide-react";
+import { ChefHat, User, Home, Plus, LogOut, BookOpen } from "lucide-react";
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { signOut } = useAuth();
+  const [activeTab, setActiveTab] = useState(location.pathname.substring(1) || "dashboard");
 
   const navigationItems = [
-    { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "generate", label: "Generate Recipe", icon: Plus },
-    { id: "profile", label: "Profile", icon: User },
+    { id: "dashboard", label: "Dashboard", icon: Home, path: "/" },
+    { id: "generate", label: "Generate Recipe", icon: Plus, path: "/generate" },
+    { id: "saved", label: "Saved Recipes", icon: BookOpen, path: "/saved" },
+    { id: "profile", label: "Profile", icon: User, path: "/profile" },
   ];
+
+  const handleNavigation = (item: any) => {
+    setActiveTab(item.id);
+    navigate(item.path);
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/auth");
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm">
@@ -28,16 +44,17 @@ const Header = () => {
           <nav className="hidden md:flex space-x-1">
             {navigationItems.map((item) => {
               const Icon = item.icon;
+              const isActive = location.pathname === item.path;
               return (
                 <Button
                   key={item.id}
-                  variant={activeTab === item.id ? "default" : "ghost"}
+                  variant={isActive ? "default" : "ghost"}
                   className={`flex items-center space-x-2 ${
-                    activeTab === item.id 
+                    isActive 
                       ? "bg-health-green-500 hover:bg-health-green-600 text-white" 
                       : "text-gray-600 hover:text-health-green-600 hover:bg-health-green-50"
                   }`}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => handleNavigation(item)}
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
@@ -51,6 +68,7 @@ const Header = () => {
             <Button
               variant="outline"
               className="text-health-orange-600 border-health-orange-300 hover:bg-health-orange-50"
+              onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-2" />
               Logout
@@ -62,17 +80,18 @@ const Header = () => {
         <div className="md:hidden flex space-x-1 pb-3">
           {navigationItems.map((item) => {
             const Icon = item.icon;
+            const isActive = location.pathname === item.path;
             return (
               <Button
                 key={item.id}
-                variant={activeTab === item.id ? "default" : "ghost"}
+                variant={isActive ? "default" : "ghost"}
                 size="sm"
                 className={`flex items-center space-x-1 ${
-                  activeTab === item.id 
+                  isActive 
                     ? "bg-health-green-500 hover:bg-health-green-600 text-white" 
                     : "text-gray-600 hover:text-health-green-600 hover:bg-health-green-50"
                 }`}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => handleNavigation(item)}
               >
                 <Icon className="h-3 w-3" />
                 <span className="text-xs">{item.label}</span>

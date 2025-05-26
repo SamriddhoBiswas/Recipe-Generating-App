@@ -9,7 +9,145 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          age: number | null
+          created_at: string | null
+          dietary_goals: string[] | null
+          email: string | null
+          full_name: string | null
+          height_cm: number | null
+          id: string
+          updated_at: string | null
+          weight_kg: number | null
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string | null
+          dietary_goals?: string[] | null
+          email?: string | null
+          full_name?: string | null
+          height_cm?: number | null
+          id: string
+          updated_at?: string | null
+          weight_kg?: number | null
+        }
+        Update: {
+          age?: number | null
+          created_at?: string | null
+          dietary_goals?: string[] | null
+          email?: string | null
+          full_name?: string | null
+          height_cm?: number | null
+          id?: string
+          updated_at?: string | null
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          cook_time: string | null
+          created_at: string | null
+          cuisine: string | null
+          difficulty: string | null
+          id: string
+          ingredients: Json | null
+          instructions: string[] | null
+          is_public: boolean | null
+          nutritional_info: Json | null
+          servings: number | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          user_id: string | null
+          youtube_link: string | null
+        }
+        Insert: {
+          cook_time?: string | null
+          created_at?: string | null
+          cuisine?: string | null
+          difficulty?: string | null
+          id?: string
+          ingredients?: Json | null
+          instructions?: string[] | null
+          is_public?: boolean | null
+          nutritional_info?: Json | null
+          servings?: number | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          user_id?: string | null
+          youtube_link?: string | null
+        }
+        Update: {
+          cook_time?: string | null
+          created_at?: string | null
+          cuisine?: string | null
+          difficulty?: string | null
+          id?: string
+          ingredients?: Json | null
+          instructions?: string[] | null
+          is_public?: boolean | null
+          nutritional_info?: Json | null
+          servings?: number | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string | null
+          youtube_link?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_preferences: {
+        Row: {
+          allergies: string[] | null
+          created_at: string | null
+          cuisine_preferences: string[] | null
+          deficiencies: string[] | null
+          food_preferences: string[] | null
+          id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          allergies?: string[] | null
+          created_at?: string | null
+          cuisine_preferences?: string[] | null
+          deficiencies?: string[] | null
+          food_preferences?: string[] | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          allergies?: string[] | null
+          created_at?: string | null
+          cuisine_preferences?: string[] | null
+          deficiencies?: string[] | null
+          food_preferences?: string[] | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
