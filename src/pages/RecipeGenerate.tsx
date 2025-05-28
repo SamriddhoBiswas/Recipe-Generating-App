@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,6 +96,11 @@ const RecipeGenerate = () => {
     
     setSaving(true);
     try {
+      // Convert servings string to number for database
+      const servingsNumber = generatedRecipe.servings.includes('-') 
+        ? parseInt(generatedRecipe.servings.split('-')[1]) 
+        : parseInt(generatedRecipe.servings.replace('+', ''));
+
       const { error } = await supabase
         .from('recipes')
         .insert({
@@ -105,7 +109,7 @@ const RecipeGenerate = () => {
           ingredients: generatedRecipe.ingredients,
           instructions: generatedRecipe.instructions,
           cook_time: generatedRecipe.cookTime,
-          servings: generatedRecipe.servings,
+          servings: servingsNumber,
           difficulty: generatedRecipe.difficulty,
           cuisine: generatedRecipe.cuisine,
           nutritional_info: generatedRecipe.nutritionalInfo,
