@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -139,7 +138,7 @@ const Profile = () => {
 
       if (profileError) throw profileError;
 
-      // Update preferences
+      // Update preferences using the correct upsert with onConflict
       const { error: prefsError } = await supabase
         .from('user_preferences')
         .upsert({
@@ -148,6 +147,8 @@ const Profile = () => {
           allergies: preferences.allergies,
           deficiencies: preferences.deficiencies,
           cuisine_preferences: preferences.cuisine_preferences,
+        }, {
+          onConflict: 'user_id'
         });
 
       if (prefsError) throw prefsError;
