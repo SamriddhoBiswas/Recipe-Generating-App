@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +13,19 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import BackButton from '@/components/BackButton';
 
+interface GeneratedRecipe {
+  title: string;
+  ingredients: string[];
+  instructions: string[];
+  cookTime: string;
+  servings: string;
+  difficulty: string;
+  cuisine: string;
+  nutritionalInfo?: Record<string, string>;
+  tags?: string[];
+  youtubeLink?: string;
+}
+
 const RecipeGenerate = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -24,7 +38,7 @@ const RecipeGenerate = () => {
     ingredients: '',
     mealType: '',
   });
-  const [generatedRecipe, setGeneratedRecipe] = useState<any>(null);
+  const [generatedRecipe, setGeneratedRecipe] = useState<GeneratedRecipe | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -312,7 +326,7 @@ const RecipeGenerate = () => {
                       {Object.entries(generatedRecipe.nutritionalInfo).map(([key, value]) => (
                         <div key={key} className="flex justify-between">
                           <span className="capitalize">{key}:</span>
-                          <span>{value}</span>
+                          <span>{value as string}</span>
                         </div>
                       ))}
                     </div>
