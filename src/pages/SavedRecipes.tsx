@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
+import BackButton from '@/components/BackButton';
 import { Recipe } from '@/types/recipe';
 
 const SavedRecipes = () => {
@@ -102,7 +102,7 @@ const SavedRecipes = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header />
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-health-green-500"></div>
@@ -112,13 +112,15 @@ const SavedRecipes = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <BackButton />
+        
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold health-text-gradient mb-2">Saved Recipes</h1>
-          <p className="text-gray-600">Your collection of healthy recipes</p>
+          <p className="text-gray-600 dark:text-gray-300">Your collection of healthy recipes</p>
         </div>
 
         {/* Search */}
@@ -137,18 +139,18 @@ const SavedRecipes = () => {
         {/* Recipes Grid */}
         {filteredRecipes.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">
+            <p className="text-gray-500 dark:text-gray-400 text-lg">
               {recipes.length === 0 ? "No saved recipes yet. Start by generating your first recipe!" : "No recipes match your search."}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredRecipes.map((recipe) => (
-              <Card key={recipe.id} className="hover:shadow-lg transition-shadow">
+              <Card key={recipe.id} className="hover:shadow-lg transition-shadow dark:bg-gray-800">
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <CardTitle className="text-lg line-clamp-2">{recipe.title}</CardTitle>
+                      <CardTitle className="text-lg line-clamp-2 dark:text-white">{recipe.title}</CardTitle>
                       <CardDescription className="flex items-center gap-4 mt-2">
                         {recipe.cook_time && (
                           <span className="flex items-center gap-1">
@@ -174,7 +176,7 @@ const SavedRecipes = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => deleteRecipe(recipe.id)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -183,8 +185,8 @@ const SavedRecipes = () => {
                 <CardContent className="space-y-4">
                   {recipe.ingredients && recipe.ingredients.length > 0 && (
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">Key Ingredients</h4>
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <h4 className="font-semibold text-sm mb-2 dark:text-white">Key Ingredients</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
                         {recipe.ingredients.slice(0, 3).join(', ')}
                         {recipe.ingredients.length > 3 && '...'}
                       </p>
@@ -193,8 +195,8 @@ const SavedRecipes = () => {
 
                   {recipe.nutritional_info && (
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">Nutrition (per serving)</h4>
-                      <div className="grid grid-cols-2 gap-1 text-xs text-gray-600">
+                      <h4 className="font-semibold text-sm mb-2 dark:text-white">Nutrition (per serving)</h4>
+                      <div className="grid grid-cols-2 gap-1 text-xs text-gray-600 dark:text-gray-300">
                         {recipe.nutritional_info.calories && (
                           <div>Calories: {recipe.nutritional_info.calories}</div>
                         )}

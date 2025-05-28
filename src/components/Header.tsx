@@ -4,6 +4,7 @@ import { ChefHat, User, Home, Plus, LogOut, BookOpen } from "lucide-react";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm">
+    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -52,7 +53,7 @@ const Header = () => {
                   className={`flex items-center space-x-2 ${
                     isActive 
                       ? "bg-health-green-500 hover:bg-health-green-600 text-white" 
-                      : "text-gray-600 hover:text-health-green-600 hover:bg-health-green-50"
+                      : "text-gray-600 dark:text-gray-300 hover:text-health-green-600 hover:bg-health-green-50 dark:hover:bg-health-green-900/20"
                   }`}
                   onClick={() => handleNavigation(item)}
                 >
@@ -65,9 +66,10 @@ const Header = () => {
 
           {/* User Actions */}
           <div className="flex items-center space-x-2">
+            <ThemeToggle />
             <Button
               variant="outline"
-              className="text-health-orange-600 border-health-orange-300 hover:bg-health-orange-50"
+              className="text-health-orange-600 border-health-orange-300 hover:bg-health-orange-50 dark:hover:bg-health-orange-900/20"
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-2" />
@@ -89,7 +91,7 @@ const Header = () => {
                 className={`flex items-center space-x-1 ${
                   isActive 
                     ? "bg-health-green-500 hover:bg-health-green-600 text-white" 
-                    : "text-gray-600 hover:text-health-green-600 hover:bg-health-green-50"
+                    : "text-gray-600 dark:text-gray-300 hover:text-health-green-600 hover:bg-health-green-50 dark:hover:bg-health-green-900/20"
                 }`}
                 onClick={() => handleNavigation(item)}
               >

@@ -1,96 +1,62 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ChefHat, Clock, Users, Star, BookmarkPlus, Youtube } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ChefHat, Clock, Users, Star, Save, ExternalLink } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import Header from '@/components/Header';
 import BackButton from '@/components/BackButton';
 
 const RecipeGenerate = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [preferences, setPreferences] = useState({
     cuisine: '',
+    difficulty: '',
     cookTime: '',
     servings: '',
-    difficulty: '',
-    ingredients: '',
     dietaryRestrictions: [] as string[],
+    ingredients: '',
+    mealType: '',
   });
   const [generatedRecipe, setGeneratedRecipe] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [userProfile, setUserProfile] = useState<any>(null);
-  const [userPreferences, setUserPreferences] = useState<any>(null);
-  const { toast } = useToast();
-  const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
 
-  const dietaryOptions = [
-    'Vegetarian', 'Vegan', 'Non-Vegetarian', 'Gluten-free', 'Dairy-free', 'Keto', 
-    'Low-carb', 'High-protein', 'Low-sodium', 'Sugar-free'
-  ];
+  const cuisineOptions = ['Italian', 'Chinese', 'Mexican', 'Indian', 'Japanese', 'Mediterranean', 'American', 'Thai', 'French', 'Korean'];
+  const difficultyOptions = ['Easy', 'Medium', 'Hard'];
+  const cookTimeOptions = ['15 minutes', '30 minutes', '45 minutes', '1 hour', '1+ hours'];
+  const servingsOptions = ['1-2', '3-4', '5-6', '7+'];
+  const dietaryOptions = ['Vegetarian', 'Vegan', 'Gluten-free', 'Dairy-free', 'Keto', 'Low-carb', 'High-protein'];
+  const mealTypeOptions = ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert'];
 
-  useEffect(() => {
-    if (user) {
-      fetchUserData();
-    }
-  }, [user]);
-
-  const fetchUserData = async () => {
-    if (!user) return;
-
-    try {
-      // Fetch user profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      // Fetch user preferences
-      const { data: preferencesData } = await supabase
-        .from('user_preferences')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      setUserProfile(profileData);
-      setUserPreferences(preferencesData);
-    } catch (error) {
-      console.log('Error fetching user data:', error);
-    }
+  const handlePreferenceChange = (key: string, value: string | string[]) => {
+    setPreferences(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleDietaryChange = (option: string, checked: boolean) => {
-    if (checked) {
-      setPreferences(prev => ({
-        ...prev,
-        dietaryRestrictions: [...prev.dietaryRestrictions, option]
-      }));
-    } else {
-      setPreferences(prev => ({
-        ...prev,
-        dietaryRestrictions: prev.dietaryRestrictions.filter(item => item !== option)
-      }));
-    }
+  const handleDietaryRestrictionChange = (restriction: string, checked: boolean) => {
+    setPreferences(prev => ({
+      ...prev,
+      dietaryRestrictions: checked
+        ? [...prev.dietaryRestrictions, restriction]
+        : prev.dietaryRestrictions.filter(r => r !== restriction)
+    }));
   };
 
   const generateRecipe = async () => {
+    if (!user) return;
+    
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-recipe-with-gemini', {
         body: {
           preferences,
-          userProfile: {
-            dietary_goals: userProfile?.dietary_goals,
-            food_preferences: userPreferences?.food_preferences,
-            allergies: userPreferences?.allergies,
-            deficiencies: userPreferences?.deficiencies,
-          }
+          userId: user.id
         }
       });
 
@@ -99,13 +65,12 @@ const RecipeGenerate = () => {
       setGeneratedRecipe(data.recipe);
       toast({
         title: "Recipe Generated!",
-        description: "Your personalized recipe is ready!",
+        description: "Your personalized recipe is ready.",
       });
     } catch (error: any) {
-      console.error('Recipe generation error:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to generate recipe. Please try again.",
+        description: error.message || "Failed to generate recipe",
         variant: "destructive",
       });
     } finally {
@@ -115,29 +80,30 @@ const RecipeGenerate = () => {
 
   const saveRecipe = async () => {
     if (!generatedRecipe || !user) return;
-
+    
+    setSaving(true);
     try {
       const { error } = await supabase
         .from('recipes')
         .insert({
           user_id: user.id,
           title: generatedRecipe.title,
-          cuisine: generatedRecipe.cuisine,
+          ingredients: generatedRecipe.ingredients,
+          instructions: generatedRecipe.instructions,
           cook_time: generatedRecipe.cookTime,
           servings: generatedRecipe.servings,
           difficulty: generatedRecipe.difficulty,
-          ingredients: generatedRecipe.ingredients,
-          instructions: generatedRecipe.instructions,
+          cuisine: generatedRecipe.cuisine,
           nutritional_info: generatedRecipe.nutritionalInfo,
-          youtube_link: generatedRecipe.youtubeLink,
           tags: generatedRecipe.tags,
+          youtube_link: generatedRecipe.youtubeLink,
         });
 
       if (error) throw error;
 
       toast({
         title: "Recipe Saved!",
-        description: "Recipe has been saved to your collection.",
+        description: "Recipe has been added to your collection.",
       });
     } catch (error: any) {
       toast({
@@ -145,203 +111,239 @@ const RecipeGenerate = () => {
         description: error.message,
         variant: "destructive",
       });
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <BackButton />
       
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <BackButton />
-        
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold health-text-gradient mb-2">Generate Your Perfect Recipe</h1>
-          <p className="text-gray-600">Tell us your preferences and we'll create a personalized healthy recipe for you</p>
-        </div>
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold health-text-gradient mb-2">Generate Recipe</h1>
+        <p className="text-gray-600 dark:text-gray-300">Create a personalized healthy recipe based on your preferences</p>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Preferences Form */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ChefHat className="h-5 w-5" />
-                Recipe Preferences
-              </CardTitle>
-              <CardDescription>Customize your recipe based on your needs</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cuisine">Cuisine Type</Label>
-                  <Select onValueChange={(value) => setPreferences(prev => ({ ...prev, cuisine: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select cuisine" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="mediterranean">Mediterranean</SelectItem>
-                      <SelectItem value="asian">Asian</SelectItem>
-                      <SelectItem value="mexican">Mexican</SelectItem>
-                      <SelectItem value="italian">Italian</SelectItem>
-                      <SelectItem value="indian">Indian</SelectItem>
-                      <SelectItem value="american">American</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="difficulty">Difficulty</Label>
-                  <Select onValueChange={(value) => setPreferences(prev => ({ ...prev, difficulty: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select difficulty" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="easy">Easy</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="hard">Hard</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Recipe Generation Form */}
+        <Card className="dark:bg-gray-800">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 dark:text-white">
+              <ChefHat className="h-5 w-5" />
+              Recipe Preferences
+            </CardTitle>
+            <CardDescription className="dark:text-gray-300">Customize your recipe generation</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="dark:text-white">Cuisine Type</Label>
+                <Select value={preferences.cuisine} onValueChange={(value) => handlePreferenceChange('cuisine', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select cuisine" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cuisineOptions.map(cuisine => (
+                      <SelectItem key={cuisine} value={cuisine}>{cuisine}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+              
+              <div className="space-y-2">
+                <Label className="dark:text-white">Meal Type</Label>
+                <Select value={preferences.mealType} onValueChange={(value) => handlePreferenceChange('mealType', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select meal type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mealTypeOptions.map(meal => (
+                      <SelectItem key={meal} value={meal}>{meal}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="cookTime">Cook Time</Label>
-                  <Select onValueChange={(value) => setPreferences(prev => ({ ...prev, cookTime: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select time" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="15 minutes">15 minutes</SelectItem>
-                      <SelectItem value="30 minutes">30 minutes</SelectItem>
-                      <SelectItem value="45 minutes">45 minutes</SelectItem>
-                      <SelectItem value="1 hour">1 hour</SelectItem>
-                      <SelectItem value="2+ hours">2+ hours</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="servings">Servings</Label>
-                  <Input
-                    id="servings"
-                    type="number"
-                    placeholder="e.g., 4"
-                    value={preferences.servings}
-                    onChange={(e) => setPreferences(prev => ({ ...prev, servings: e.target.value }))}
-                  />
-                </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label className="dark:text-white">Difficulty</Label>
+                <Select value={preferences.difficulty} onValueChange={(value) => handlePreferenceChange('difficulty', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {difficultyOptions.map(difficulty => (
+                      <SelectItem key={difficulty} value={difficulty}>{difficulty}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="ingredients">Specific Ingredients (optional)</Label>
-                <Textarea
-                  id="ingredients"
-                  placeholder="e.g., chicken, quinoa, avocado..."
-                  value={preferences.ingredients}
-                  onChange={(e) => setPreferences(prev => ({ ...prev, ingredients: e.target.value }))}
-                />
+                <Label className="dark:text-white">Cook Time</Label>
+                <Select value={preferences.cookTime} onValueChange={(value) => handlePreferenceChange('cookTime', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cookTimeOptions.map(time => (
+                      <SelectItem key={time} value={time}>{time}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className="space-y-3">
-                <Label>Dietary Restrictions</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {dietaryOptions.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={option}
-                        checked={preferences.dietaryRestrictions.includes(option)}
-                        onCheckedChange={(checked) => handleDietaryChange(option, checked as boolean)}
-                      />
-                      <Label htmlFor={option} className="text-sm">{option}</Label>
+              <div className="space-y-2">
+                <Label className="dark:text-white">Servings</Label>
+                <Select value={preferences.servings} onValueChange={(value) => handlePreferenceChange('servings', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {servingsOptions.map(serving => (
+                      <SelectItem key={serving} value={serving}>{serving}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Label className="dark:text-white">Dietary Restrictions</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {dietaryOptions.map(option => (
+                  <div key={option} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={option}
+                      checked={preferences.dietaryRestrictions.includes(option)}
+                      onCheckedChange={(checked) => handleDietaryRestrictionChange(option, checked as boolean)}
+                    />
+                    <Label htmlFor={option} className="text-sm dark:text-white">{option}</Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="dark:text-white">Specific Ingredients (optional)</Label>
+              <Textarea
+                placeholder="List any specific ingredients you want to include..."
+                value={preferences.ingredients}
+                onChange={(e) => handlePreferenceChange('ingredients', e.target.value)}
+                rows={3}
+              />
+            </div>
+
+            <Button 
+              onClick={generateRecipe} 
+              disabled={loading || !preferences.cuisine}
+              className="w-full bg-health-green-600 hover:bg-health-green-700"
+            >
+              {loading ? 'Generating...' : 'Generate Recipe'}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Generated Recipe Display */}
+        <Card className="dark:bg-gray-800">
+          <CardHeader>
+            <CardTitle className="dark:text-white">Generated Recipe</CardTitle>
+            <CardDescription className="dark:text-gray-300">Your personalized healthy recipe</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!generatedRecipe ? (
+              <div className="text-center py-12">
+                <ChefHat className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">Generate a recipe to see it here</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-bold mb-2 dark:text-white">{generatedRecipe.title}</h3>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {generatedRecipe.cookTime}
+                    </Badge>
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {generatedRecipe.servings}
+                    </Badge>
+                    <Badge variant="outline" className="flex items-center gap-1">
+                      <Star className="h-3 w-3" />
+                      {generatedRecipe.difficulty}
+                    </Badge>
+                  </div>
+                  {generatedRecipe.tags && (
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {generatedRecipe.tags.map((tag: string, index: number) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-
-              <Button onClick={generateRecipe} disabled={loading} className="w-full">
-                {loading ? 'Generating...' : 'Generate Recipe with AI'}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Generated Recipe */}
-          {generatedRecipe && (
-            <Card>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-xl">{generatedRecipe.title}</CardTitle>
-                    <CardDescription className="flex items-center gap-4 mt-2">
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {generatedRecipe.cookTime}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        {generatedRecipe.servings} servings
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Star className="h-4 w-4" />
-                        {generatedRecipe.difficulty}
-                      </span>
-                    </CardDescription>
-                  </div>
-                  <Button onClick={saveRecipe} variant="outline" size="sm">
-                    <BookmarkPlus className="h-4 w-4 mr-2" />
-                    Save
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {generatedRecipe.youtubeLink && (
-                  <div>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => window.open(generatedRecipe.youtubeLink, '_blank')}
-                    >
-                      <Youtube className="h-4 w-4 mr-2" />
-                      Watch Tutorial on YouTube
-                    </Button>
-                  </div>
-                )}
 
                 <div>
-                  <h3 className="font-semibold mb-2">Ingredients</h3>
-                  <ul className="space-y-1">
+                  <h4 className="font-semibold mb-2 dark:text-white">Ingredients</h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600 dark:text-gray-300">
                     {generatedRecipe.ingredients?.map((ingredient: string, index: number) => (
-                      <li key={index} className="text-sm">• {ingredient}</li>
+                      <li key={index}>{ingredient}</li>
                     ))}
                   </ul>
                 </div>
 
                 <div>
-                  <h3 className="font-semibold mb-2">Instructions</h3>
-                  <ol className="space-y-2">
-                    {generatedRecipe.instructions?.map((step: string, index: number) => (
-                      <li key={index} className="text-sm">
-                        <span className="font-medium">{index + 1}.</span> {step}
-                      </li>
+                  <h4 className="font-semibold mb-2 dark:text-white">Instructions</h4>
+                  <ol className="list-decimal list-inside space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                    {generatedRecipe.instructions?.map((instruction: string, index: number) => (
+                      <li key={index}>{instruction}</li>
                     ))}
                   </ol>
                 </div>
 
                 {generatedRecipe.nutritionalInfo && (
                   <div>
-                    <h3 className="font-semibold mb-2">Nutrition (per serving)</h3>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>Calories: {generatedRecipe.nutritionalInfo.calories}</div>
-                      <div>Protein: {generatedRecipe.nutritionalInfo.protein}</div>
-                      <div>Carbs: {generatedRecipe.nutritionalInfo.carbs}</div>
-                      <div>Fat: {generatedRecipe.nutritionalInfo.fat}</div>
+                    <h4 className="font-semibold mb-2 dark:text-white">Nutritional Information (per serving)</h4>
+                    <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
+                      {Object.entries(generatedRecipe.nutritionalInfo).map(([key, value]) => (
+                        <div key={key} className="flex justify-between">
+                          <span className="capitalize">{key}:</span>
+                          <span>{value}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          )}
-        </div>
+
+                {generatedRecipe.youtubeLink && (
+                  <Button
+                    variant="outline"
+                    asChild
+                    className="w-full"
+                  >
+                    <a href={generatedRecipe.youtubeLink} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Watch Tutorial on YouTube
+                    </a>
+                  </Button>
+                )}
+
+                <Button 
+                  onClick={saveRecipe} 
+                  disabled={saving}
+                  className="w-full bg-health-orange-600 hover:bg-health-orange-700"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {saving ? 'Saving...' : 'Save Recipe'}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

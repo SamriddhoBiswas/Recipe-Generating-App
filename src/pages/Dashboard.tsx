@@ -1,4 +1,3 @@
-
 import Header from "@/components/Header";
 import RecipeCard from "@/components/RecipeCard";
 import UserPreferences from "@/components/UserPreferences";
@@ -132,7 +131,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -141,7 +140,7 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold health-text-gradient mb-2">
             Welcome back{profile?.full_name ? `, ${profile.full_name}` : ''}!
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Ready to discover some healthy and delicious recipes today?
           </p>
         </div>
@@ -150,9 +149,9 @@ const Dashboard = () => {
         {(profile?.dietary_goals?.length > 0 || preferences?.food_preferences?.length > 0) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {profile?.dietary_goals?.length > 0 && (
-              <Card>
+              <Card className="dark:bg-gray-800">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Your Goals</CardTitle>
+                  <CardTitle className="text-sm font-medium dark:text-white">Your Goals</CardTitle>
                   <Target className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -173,9 +172,9 @@ const Dashboard = () => {
             )}
 
             {preferences?.food_preferences?.length > 0 && (
-              <Card>
+              <Card className="dark:bg-gray-800">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Food Preferences</CardTitle>
+                  <CardTitle className="text-sm font-medium dark:text-white">Food Preferences</CardTitle>
                   <Heart className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -199,37 +198,37 @@ const Dashboard = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
+          <Card className="dark:bg-gray-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Recipes</CardTitle>
+              <CardTitle className="text-sm font-medium dark:text-white">Total Recipes</CardTitle>
               <ChefHat className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalRecipes}</div>
+              <div className="text-2xl font-bold dark:text-white">{stats.totalRecipes}</div>
               <p className="text-xs text-muted-foreground">
                 Your recipe collection
               </p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="dark:bg-gray-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">This Week</CardTitle>
+              <CardTitle className="text-sm font-medium dark:text-white">This Week</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.thisWeek}</div>
+              <div className="text-2xl font-bold dark:text-white">{stats.thisWeek}</div>
               <p className="text-xs text-muted-foreground">
                 New recipes generated
               </p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="dark:bg-gray-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg Cook Time</CardTitle>
+              <CardTitle className="text-sm font-medium dark:text-white">Avg Cook Time</CardTitle>
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.avgCookTime}m</div>
+              <div className="text-2xl font-bold dark:text-white">{stats.avgCookTime}m</div>
               <p className="text-xs text-muted-foreground">
                 Your preferred duration
               </p>
@@ -239,18 +238,18 @@ const Dashboard = () => {
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-semibold mb-4 dark:text-white">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {quickActionCards.map((card, index) => {
               const Icon = card.icon;
               return (
-                <Card key={index} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={card.action}>
+                <Card key={index} className="cursor-pointer hover:shadow-lg transition-shadow dark:bg-gray-800" onClick={card.action}>
                   <CardHeader>
                     <div className={`w-12 h-12 ${card.color} rounded-lg flex items-center justify-center mb-4`}>
                       <Icon className="h-6 w-6 text-white" />
                     </div>
-                    <CardTitle className="text-lg">{card.title}</CardTitle>
-                    <CardDescription>{card.description}</CardDescription>
+                    <CardTitle className="text-lg dark:text-white">{card.title}</CardTitle>
+                    <CardDescription className="dark:text-gray-300">{card.description}</CardDescription>
                   </CardHeader>
                 </Card>
               );
@@ -262,16 +261,16 @@ const Dashboard = () => {
         {recentRecipes.length > 0 && (
           <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Recent Recipes</h2>
+              <h2 className="text-xl font-semibold dark:text-white">Recent Recipes</h2>
               <Button variant="ghost" onClick={() => navigate("/saved")}>
                 View All
               </Button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {recentRecipes.map((recipe) => (
-                <Card key={recipe.id}>
+                <Card key={recipe.id} className="dark:bg-gray-800">
                   <CardHeader>
-                    <CardTitle className="text-lg">{recipe.title}</CardTitle>
+                    <CardTitle className="text-lg dark:text-white">{recipe.title}</CardTitle>
                     <CardDescription className="flex items-center gap-4">
                       <span className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
@@ -306,10 +305,10 @@ const Dashboard = () => {
 
         {/* Show setup prompt if no profile data */}
         {!profile?.dietary_goals?.length && !preferences?.food_preferences?.length && (
-          <Card className="bg-gradient-to-r from-health-green-50 to-health-orange-50 border-health-green-200">
+          <Card className="bg-gradient-to-r from-health-green-50 to-health-orange-50 dark:from-health-green-900/20 dark:to-health-orange-900/20 border-health-green-200 dark:border-health-green-700">
             <CardHeader>
-              <CardTitle className="text-health-green-700">Complete Your Profile</CardTitle>
-              <CardDescription className="text-health-green-600">
+              <CardTitle className="text-health-green-700 dark:text-health-green-300">Complete Your Profile</CardTitle>
+              <CardDescription className="text-health-green-600 dark:text-health-green-400">
                 Set up your dietary goals and preferences to get personalized recipe recommendations.
               </CardDescription>
             </CardHeader>
