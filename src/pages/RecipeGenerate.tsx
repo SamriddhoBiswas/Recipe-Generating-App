@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,11 +6,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChefHat, Clock, Users, Star, BookmarkPlus } from 'lucide-react';
+import { ChefHat, Clock, Users, Star, BookmarkPlus, Youtube } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
+import BackButton from '@/components/BackButton';
 
 const RecipeGenerate = () => {
   const [preferences, setPreferences] = useState({
@@ -129,6 +129,7 @@ const RecipeGenerate = () => {
           ingredients: generatedRecipe.ingredients,
           instructions: generatedRecipe.instructions,
           nutritional_info: generatedRecipe.nutritionalInfo,
+          youtube_link: generatedRecipe.youtubeLink,
           tags: generatedRecipe.tags,
         });
 
@@ -152,6 +153,8 @@ const RecipeGenerate = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <BackButton />
+        
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold health-text-gradient mb-2">Generate Your Perfect Recipe</h1>
           <p className="text-gray-600">Tell us your preferences and we'll create a personalized healthy recipe for you</p>
@@ -291,6 +294,19 @@ const RecipeGenerate = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
+                {generatedRecipe.youtubeLink && (
+                  <div>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => window.open(generatedRecipe.youtubeLink, '_blank')}
+                    >
+                      <Youtube className="h-4 w-4 mr-2" />
+                      Watch Tutorial on YouTube
+                    </Button>
+                  </div>
+                )}
+
                 <div>
                   <h3 className="font-semibold mb-2">Ingredients</h3>
                   <ul className="space-y-1">

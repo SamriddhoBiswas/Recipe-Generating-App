@@ -60,10 +60,11 @@ Please provide a response in the following JSON format:
     "fat": "10g",
     "fiber": "8g"
   },
-  "tags": ["healthy", "vegetarian", ...]
+  "tags": ["healthy", "vegetarian", ...],
+  "youtubeSearchQuery": "recipe name cooking tutorial"
 }
 
-Make sure the recipe is healthy, balanced, and meets the specified requirements.`;
+Make sure the recipe is healthy, balanced, and meets the specified requirements. Include a youtubeSearchQuery that would be good for finding video tutorials of this recipe.`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
@@ -133,9 +134,25 @@ Make sure the recipe is healthy, balanced, and meets the specified requirements.
           fat: "12g",
           fiber: "6g"
         },
-        tags: ["healthy", "nutritious"]
+        tags: ["healthy", "nutritious"],
+        youtubeSearchQuery: "healthy quinoa recipe tutorial"
       };
     }
+
+    // Search for YouTube tutorial if we have a search query
+    let youtubeLink = null;
+    if (recipeData.youtubeSearchQuery) {
+      try {
+        // Create a YouTube search URL
+        const searchQuery = encodeURIComponent(recipeData.youtubeSearchQuery);
+        youtubeLink = `https://www.youtube.com/results?search_query=${searchQuery}`;
+      } catch (error) {
+        console.log('YouTube search error:', error);
+      }
+    }
+
+    // Add YouTube link to recipe data
+    recipeData.youtubeLink = youtubeLink;
 
     return new Response(JSON.stringify({ recipe: recipeData }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

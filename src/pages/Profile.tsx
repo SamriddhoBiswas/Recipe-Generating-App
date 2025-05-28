@@ -9,6 +9,7 @@ import { User, Save } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import BackButton from '@/components/BackButton';
 
 const Profile = () => {
   const { user } = useAuth();
@@ -170,6 +171,8 @@ const Profile = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <BackButton />
+      
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold health-text-gradient mb-2">My Profile</h1>
         <p className="text-gray-600">Manage your profile and dietary preferences</p>
