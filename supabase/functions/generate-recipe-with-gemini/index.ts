@@ -65,7 +65,7 @@ Please provide a response in the following JSON format:
 
 Make sure the recipe is healthy, balanced, and meets the specified requirements.`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -82,6 +82,7 @@ Make sure the recipe is healthy, balanced, and meets the specified requirements.
     const data = await response.json();
     
     if (!response.ok) {
+      console.error('Gemini API error:', data);
       throw new Error(data.error?.message || 'Failed to generate recipe');
     }
 
@@ -102,6 +103,8 @@ Make sure the recipe is healthy, balanced, and meets the specified requirements.
         throw new Error('No JSON found in response');
       }
     } catch (parseError) {
+      console.error('JSON parsing error:', parseError);
+      console.log('Raw response:', generatedText);
       // If JSON parsing fails, create a fallback recipe
       recipeData = {
         title: "Healthy Generated Recipe",
