@@ -295,8 +295,8 @@ const Auth = () => {
           background: linear-gradient(135deg, #10b981, #f59e0b);
           border-radius: 12px;
           display: flex;
-          items-center;
-          justify-center;
+          align-items: center;
+          justify-content: center;
           margin: 0 auto 16px;
         }
       `}</style>
