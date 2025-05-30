@@ -7,7 +7,7 @@ const BackButton = () => {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate('/');
+    navigate('/dashboard');
   };
 
   return (
