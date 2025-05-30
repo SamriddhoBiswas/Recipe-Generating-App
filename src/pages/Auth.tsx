@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ChefHat } from 'lucide-react';
+import { ChefHat, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,6 +23,10 @@ const Auth = () => {
       navigate('/dashboard');
     }
   }, [user, navigate]);
+
+  const handleBackToLanding = () => {
+    navigate('/');
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,6 +96,15 @@ const Auth = () => {
       fontFamily: 'Montserrat, sans-serif',
       background: 'linear-gradient(to right, #e2e2e2, #c9d6ff)'
     }}>
+      {/* Back Button */}
+      <button
+        onClick={handleBackToLanding}
+        className="absolute top-6 left-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors bg-white/80 backdrop-blur-sm px-4 py-2 rounded-lg shadow-sm hover:shadow-md"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Home
+      </button>
+
       <div className={`relative bg-white rounded-[30px] shadow-[0_5px_15px_rgba(0,0,0,0.35)] overflow-hidden w-[768px] max-w-full min-h-[480px] transition-all duration-[0.6s] ease-in-out ${isSignUp ? 'active' : ''}`}>
         
         {/* Sign In Form */}
