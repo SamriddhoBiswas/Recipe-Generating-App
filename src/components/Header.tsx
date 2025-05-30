@@ -13,7 +13,6 @@ const Header = () => {
   const [activeTab, setActiveTab] = useState(location.pathname.substring(1) || "dashboard");
 
   const navigationItems = [
-    { id: "dashboard", label: "Dashboard", icon: Home, path: "/" },
     { id: "generate", label: "Generate Recipe", icon: Plus, path: "/generate" },
     { id: "saved", label: "Saved Recipes", icon: BookOpen, path: "/saved" },
     { id: "profile", label: "Profile", icon: User, path: "/profile" },
@@ -38,7 +37,7 @@ const Header = () => {
             <div className="w-8 h-8 bg-gradient-to-br from-health-green-500 to-health-orange-500 rounded-lg flex items-center justify-center">
               <ChefHat className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-xl font-bold health-text-gradient">HealthyEats</h1>
+            <h1 className="text-xl font-bold health-text-gradient">FlavorAI</h1>
           </div>
 
           {/* Navigation */}
