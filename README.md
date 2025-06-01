@@ -3,6 +3,10 @@
 
 FlavorAI is an AI-powered recipe generator that helps you create amazing recipes with personalized recommendations. Transform your ingredients into delicious meals with our intelligent recipe generator that provides cooking tips and nutritional insights tailored just for you.
 
+## 🌐 Live Demo
+
+[🔗 Demo Link](https://flavor-ai.lovable.app/) 
+
 ## ✨ Features
 
 - **AI-Powered Recipe Generation**: Create personalized recipes based on your ingredients and preferences
