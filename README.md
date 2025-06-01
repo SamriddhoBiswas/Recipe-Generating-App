@@ -157,16 +157,10 @@ This project uses Supabase for:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🐛 Issues & Support
-
-If you encounter any issues or have questions:
-1. Check the [Issues](../../issues) page
-2. Create a new issue with detailed information
-3. Include steps to reproduce the problem
 
 ## 🙏 Acknowledgments
 
-- Built with [Lovable](https://lovable.dev) - AI-powered web development platform
+<!-- - Built with [Lovable](https://lovable.dev) - AI-powered web development platform -->
 - UI components from [shadcn/ui](https://ui.shadcn.com/)
 - Icons from [Lucide](https://lucide.dev/)
 - Powered by [Supabase](https://supabase.com/)
