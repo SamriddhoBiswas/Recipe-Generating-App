@@ -26,13 +26,15 @@ FlavorAI is an AI-powered recipe generator that helps you create amazing recipes
 - **Icons**: Lucide React
 - **Form Handling**: React Hook Form with Zod validation
 - **Theme Management**: next-themes
-
+  
+<!-- 
 ## 📋 Prerequisites
 
 Before you begin, ensure you have the following installed:
 - **Node.js** (v16 or higher)
 - **npm** or **yarn** package manager
 - **Git**
+-->
 
 ## 🚀 Getting Started
 
