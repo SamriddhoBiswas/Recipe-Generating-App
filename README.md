@@ -1,73 +1,176 @@
-# Welcome to your Lovable project
 
-## Project info
+# FlavorAI 🍳
 
-**URL**: https://lovable.dev/projects/4393a6a0-eaff-4e40-bb29-5623d7a9fa27
+FlavorAI is an AI-powered recipe generator that helps you create amazing recipes with personalized recommendations. Transform your ingredients into delicious meals with our intelligent recipe generator that provides cooking tips and nutritional insights tailored just for you.
 
-## How can I edit this code?
+## ✨ Features
 
-There are several ways of editing your application.
+- **AI-Powered Recipe Generation**: Create personalized recipes based on your ingredients and preferences
+- **Recipe Management**: Save and organize your favorite recipes
+- **User Authentication**: Secure sign-up and login functionality
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Dark/Light Theme**: Toggle between themes for better user experience
+- **Nutritional Information**: Get detailed nutritional insights for each recipe
+- **Search & Filter**: Find recipes quickly with advanced search capabilities
 
-**Use Lovable**
+## 🛠️ Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4393a6a0-eaff-4e40-bb29-5623d7a9fa27) and start prompting.
+- **Frontend Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Routing**: React Router DOM
+- **Authentication**: Supabase Auth
+- **Database**: Supabase (PostgreSQL)
+- **State Management**: React Query (TanStack Query)
+- **Icons**: Lucide React
+- **Form Handling**: React Hook Form with Zod validation
+- **Theme Management**: next-themes
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📋 Prerequisites
 
-**Use your preferred IDE**
+Before you begin, ensure you have the following installed:
+- **Node.js** (v16 or higher)
+- **npm** or **yarn** package manager
+- **Git**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 1. Clone the Repository
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+git clone <your-repository-url>
+cd flavorai
 ```
 
-**Edit a file directly in GitHub**
+### 2. Install Dependencies
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm install
+# or
+yarn install
+```
 
-**Use GitHub Codespaces**
+### 3. Environment Setup
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Create a `.env.local` file in the root directory and add your Supabase credentials:
 
-## What technologies are used for this project?
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-This project is built with:
+### 4. Run the Development Server
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-## How can I deploy this project?
+The application will be available at `http://localhost:8080`
 
-Simply open [Lovable](https://lovable.dev/projects/4393a6a0-eaff-4e40-bb29-5623d7a9fa27) and click on Share -> Publish.
+### 5. Build for Production
 
-## Can I connect a custom domain to my Lovable project?
+```bash
+npm run build
+# or
+yarn build
+```
 
-Yes, you can!
+### 6. Preview Production Build
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```bash
+npm run preview
+# or
+yarn preview
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 📁 Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui components
+│   ├── Header.tsx      # Navigation header
+│   ├── BackButton.tsx  # Navigation back button
+│   └── ...
+├── pages/              # Page components
+│   ├── Landing.tsx     # Landing page
+│   ├── Auth.tsx        # Authentication page
+│   ├── Dashboard.tsx   # Main dashboard
+│   ├── RecipeGenerate.tsx # Recipe generation page
+│   ├── SavedRecipes.tsx   # Saved recipes page
+│   └── ...
+├── contexts/           # React contexts
+│   └── AuthContext.tsx # Authentication context
+├── hooks/              # Custom React hooks
+├── integrations/       # External service integrations
+│   └── supabase/       # Supabase configuration
+├── lib/                # Utility functions
+├── types/              # TypeScript type definitions
+└── App.tsx             # Main application component
+```
+
+## 🔧 Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## 🌐 Deployment
+
+This project can be deployed on various platforms:
+
+### Vercel (Recommended)
+1. Connect your GitHub repository to Vercel
+2. Add environment variables in Vercel dashboard
+3. Deploy automatically on every push to main branch
+
+### Netlify
+1. Connect your GitHub repository to Netlify
+2. Set build command: `npm run build`
+3. Set publish directory: `dist`
+4. Add environment variables in Netlify dashboard
+
+### Other Platforms
+The built files in the `dist` folder can be deployed to any static hosting service.
+
+## 🔐 Authentication & Database
+
+This project uses Supabase for:
+- User authentication (email/password)
+- Database storage for recipes and user data
+- Real-time subscriptions
+- Row Level Security (RLS) for data protection
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🐛 Issues & Support
+
+If you encounter any issues or have questions:
+1. Check the [Issues](../../issues) page
+2. Create a new issue with detailed information
+3. Include steps to reproduce the problem
+
+## 🙏 Acknowledgments
+
+- Built with [Lovable](https://lovable.dev) - AI-powered web development platform
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
+- Powered by [Supabase](https://supabase.com/)
+
+---
+
+**FlavorAI** - Transform your cooking experience with AI! 🚀
