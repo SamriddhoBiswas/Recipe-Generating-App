@@ -127,7 +127,7 @@ src/
 
 ## 🌐 Deployment
 
-This project can be deployed on various platforms:
+This project can be deployed on various platforms :
 
 ### Vercel (Recommended)
 1. Connect your GitHub repository to Vercel
