@@ -145,7 +145,7 @@ The built files in the `dist` folder can be deployed to any static hosting servi
 
 ## 🔐 Authentication & Database
 
-This project uses Supabase for:
+This project uses Supabase for :
 - User authentication (email/password)
 - Database storage for recipes and user data
 - Real-time subscriptions
