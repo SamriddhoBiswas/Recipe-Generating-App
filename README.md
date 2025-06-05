@@ -45,8 +45,8 @@ Before you begin, ensure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repository-url>
-cd flavorai
+git clone https://github.com/SamriddhoBiswas/Recipe-Generating-App.git
+cd Recipe-Generating-App
 ```
 
 ### 2. Install Dependencies
